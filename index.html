@@ -142,32 +142,73 @@ label{display:block;font-size:14px;color:var(--mut);margin:14px 0 6px}
         <img id="avImg" alt="" hidden>
         <svg id="avSvg" viewBox="0 0 300 300" role="img" aria-label="Avatar de LAIA">
           <defs>
-            <linearGradient id="gbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22364a"/><stop offset="1" stop-color="#121b26"/></linearGradient>
-            <linearGradient id="gskin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2c9a8"/><stop offset="1" stop-color="#e2ae8b"/></linearGradient>
-            <linearGradient id="ghair" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5a3a2a"/><stop offset="1" stop-color="#2e1c14"/></linearGradient>
-            <linearGradient id="gtop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fb8a7"/><stop offset="1" stop-color="#2a8f82"/></linearGradient>
+            <radialGradient id="gbg" cx="50%" cy="38%" r="75%"><stop offset="0" stop-color="#3a556e"/><stop offset="1" stop-color="#101822"/></radialGradient>
+            <linearGradient id="gskin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6d3b6"/><stop offset=".6" stop-color="#ecbe9c"/><stop offset="1" stop-color="#dca582"/></linearGradient>
+            <linearGradient id="gneck" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c98f6c"/><stop offset="1" stop-color="#e3b08d"/></linearGradient>
+            <linearGradient id="ghair" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b4630"/><stop offset=".5" stop-color="#43291b"/><stop offset="1" stop-color="#26160e"/></linearGradient>
+            <linearGradient id="ghair2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7a5238"/><stop offset="1" stop-color="#3b2418"/></linearGradient>
+            <linearGradient id="gtop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f4860"/><stop offset="1" stop-color="#1c2c3d"/></linearGradient>
+            <radialGradient id="giris" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#9a7448"/><stop offset=".65" stop-color="#5e4026"/><stop offset="1" stop-color="#2c1b10"/></radialGradient>
+            <radialGradient id="gblush" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ee8f85" stop-opacity=".42"/><stop offset="1" stop-color="#ee8f85" stop-opacity="0"/></radialGradient>
+            <linearGradient id="glip" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9505a"/><stop offset="1" stop-color="#d4747a"/></linearGradient>
+            <filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3.2"/></filter>
+            <filter id="soft2" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="1.4"/></filter>
+            <clipPath id="eyeL"><path d="M109 147 Q125 133 141 147 Q125 158 109 147Z"/></clipPath>
+            <clipPath id="eyeR"><path d="M159 147 Q175 133 191 147 Q175 158 159 147Z"/></clipPath>
           </defs>
           <rect width="300" height="300" fill="url(#gbg)"/>
           <g class="breath">
-            <path d="M62 300c2-58 24-104 88-104s86 46 88 104z" fill="url(#ghair)"/>
-            <path d="M40 300c6-46 40-66 78-72l32 20 32-20c38 6 72 26 78 72z" fill="url(#gtop)"/>
-            <path d="M128 206h44v34c0 10-10 18-22 18s-22-8-22-18z" fill="#d9a583"/>
-            <path d="M150 62c-52 0-78 34-76 86 1 30 6 62 16 82 6-24 8-52 10-74 26-6 52-22 66-44 10 22 28 38 44 44 2 24 4 50 12 74 10-22 14-52 14-82 0-52-32-86-86-86z" fill="url(#ghair)"/>
-            <ellipse cx="150" cy="150" rx="56" ry="68" fill="url(#gskin)"/>
-            <path d="M94 142c2-44 26-70 58-70 34 0 54 26 56 68-18-8-36-26-46-48-14 24-40 44-68 50z" fill="url(#ghair)"/>
-            <path d="M112 132q14-9 28-2" stroke="#4a2f22" stroke-width="4" fill="none" stroke-linecap="round"/>
-            <path d="M160 130q14-7 28 2" stroke="#4a2f22" stroke-width="4" fill="none" stroke-linecap="round"/>
-            <g>
-              <ellipse cx="126" cy="148" rx="10" ry="7" fill="#fff"/><circle cx="126" cy="148" r="5.6" fill="#4b6b52"/><circle cx="126" cy="148" r="2.6" fill="#1a1a1a"/><circle cx="128" cy="146" r="1.3" fill="#fff"/>
-              <ellipse cx="174" cy="148" rx="10" ry="7" fill="#fff"/><circle cx="174" cy="148" r="5.6" fill="#4b6b52"/><circle cx="174" cy="148" r="2.6" fill="#1a1a1a"/><circle cx="176" cy="146" r="1.3" fill="#fff"/>
-              <ellipse class="lid" cx="126" cy="148" rx="11" ry="8" fill="#e9bb9a"/>
-              <ellipse class="lid" cx="174" cy="148" rx="11" ry="8" fill="#e9bb9a"/>
+            <!-- melena por detrás -->
+            <path d="M74 300 C50 236 54 132 86 90 C112 56 188 56 214 90 C246 132 250 236 226 300 Z" fill="url(#ghair)"/>
+            <!-- hombros y ropa -->
+            <path d="M22 300 C30 258 66 240 110 231 L150 262 L190 231 C234 240 270 258 278 300 Z" fill="url(#gtop)"/>
+            <path d="M110 231 L150 262 L190 231 C180 227 173 222 172 214 L128 214 C127 222 120 227 110 231Z" fill="#e6b592"/>
+            <!-- cuello -->
+            <path d="M128 196 L128 228 C128 244 172 244 172 228 L172 196 Z" fill="url(#gneck)"/>
+            <ellipse cx="150" cy="213" rx="27" ry="10" fill="#9c6a4c" opacity=".55" filter="url(#soft)"/>
+            <!-- orejas -->
+            <ellipse cx="96" cy="152" rx="7" ry="13" fill="#e2ad8a"/><ellipse cx="204" cy="152" rx="7" ry="13" fill="#e2ad8a"/>
+            <circle cx="95" cy="167" r="2.4" fill="#e9d9a8"/><circle cx="205" cy="167" r="2.4" fill="#e9d9a8"/>
+            <!-- cara -->
+            <path d="M97 138 C97 94 122 72 150 72 C178 72 203 94 203 138 C203 172 190 203 168 216 C158 222 142 222 132 216 C110 203 97 172 97 138Z" fill="url(#gskin)"/>
+            <path d="M108 176 C116 200 132 214 150 216 C168 214 184 200 192 176 C186 204 170 222 150 222 C130 222 114 204 108 176Z" fill="#c98f6c" opacity=".35" filter="url(#soft2)"/>
+            <ellipse cx="116" cy="172" rx="16" ry="11" fill="url(#gblush)"/><ellipse cx="184" cy="172" rx="16" ry="11" fill="url(#gblush)"/>
+            <!-- cejas -->
+            <path d="M107 127 C116 118 130 117 142 123 C130 121.5 118 122 107 127Z" fill="#3b2418"/>
+            <path d="M193 127 C184 118 170 117 158 123 C170 121.5 182 122 193 127Z" fill="#3b2418"/>
+            <!-- ojos -->
+            <path d="M109 147 Q125 133 141 147 Q125 158 109 147Z" fill="#fbf7f2"/>
+            <g clip-path="url(#eyeL)"><circle cx="125.5" cy="146" r="8.2" fill="url(#giris)"/><circle cx="125.5" cy="146" r="3.2" fill="#0e0907"/><circle cx="128" cy="143.4" r="1.7" fill="#fff"/></g>
+            <path d="M108 147.5 Q125 131.5 142 147" stroke="#2a1a12" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+            <path d="M112 137.5 Q125 128.5 138 137" stroke="#c48f6e" stroke-width="1.2" fill="none" opacity=".8"/>
+            <path d="M159 147 Q175 133 191 147 Q175 158 159 147Z" fill="#fbf7f2"/>
+            <g clip-path="url(#eyeR)"><circle cx="174.5" cy="146" r="8.2" fill="url(#giris)"/><circle cx="174.5" cy="146" r="3.2" fill="#0e0907"/><circle cx="177" cy="143.4" r="1.7" fill="#fff"/></g>
+            <path d="M158 147 Q175 131.5 192 147.5" stroke="#2a1a12" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+            <path d="M162 137 Q175 128.5 188 137.5" stroke="#c48f6e" stroke-width="1.2" fill="none" opacity=".8"/>
+            <ellipse class="lid" cx="125" cy="146" rx="17" ry="10.5" fill="#efc4a3"/>
+            <ellipse class="lid" cx="175" cy="146" rx="17" ry="10.5" fill="#efc4a3"/>
+            <!-- nariz -->
+            <path d="M147 150 C145 162 141 170 143 175" stroke="#c9906d" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".8"/>
+            <path d="M142 176 C146 181 154 181 158 176" stroke="#b9805f" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <ellipse cx="150" cy="170" rx="4" ry="7" fill="#fff" opacity=".16"/>
+            <!-- boca en reposo -->
+            <g class="mouth-rest">
+              <path d="M130 190.5 C140 190 146 189 150 191 C154 189 160 190 170 190.5 C163 196 156 198 150 198 C144 198 137 196 130 190.5Z" fill="#b24c56"/>
+              <path d="M134 195 C141 206 159 206 166 195 C158 199 142 199 134 195Z" fill="url(#glip)"/>
+              <path d="M128 189.5 C138 197.5 162 197.5 172 189.5" stroke="#8f3a44" stroke-width="1.1" fill="none" stroke-linecap="round"/>
             </g>
-            <path d="M150 152q-5 16-1 22q4 2 8-1" stroke="#c98f6d" stroke-width="3" fill="none" stroke-linecap="round"/>
-            <ellipse cx="112" cy="172" rx="11" ry="7" fill="#f09c8c" opacity=".28"/>
-            <ellipse cx="188" cy="172" rx="11" ry="7" fill="#f09c8c" opacity=".28"/>
-            <path class="mouth-rest" d="M131 190q19 13 38 0" stroke="#b5544f" stroke-width="5" fill="none" stroke-linecap="round"/>
-            <ellipse class="mouth-talk" cx="150" cy="192" rx="15" ry="9" fill="#7a2f33" stroke="#b5544f" stroke-width="3"/>
+            <!-- boca hablando -->
+            <g class="mouth-talk">
+              <ellipse cx="150" cy="195" rx="14" ry="9" fill="#4a161d"/>
+              <path d="M139 191 Q150 188 161 191 L161 193 Q150 191 139 193Z" fill="#f4eee8"/>
+              <ellipse cx="150" cy="195" rx="14" ry="9" fill="none" stroke="#c05a63" stroke-width="3.4"/>
+            </g>
+            <!-- flequillo con raya al lado -->
+            <path d="M90 152 C82 98 114 62 152 62 C192 62 220 98 210 152 C206 126 196 106 176 92 C160 112 128 128 98 132 C94 138 91 145 90 152Z" fill="url(#ghair2)"/>
+            <path d="M90 152 C86 190 90 226 102 262 C86 236 72 190 78 140 C82 144 87 148 90 152Z" fill="url(#ghair)"/>
+            <path d="M210 152 C214 190 210 226 198 262 C214 236 228 190 222 140 C218 144 213 148 210 152Z" fill="url(#ghair)"/>
+            <path d="M120 76 C140 66 170 68 190 88" stroke="#a9805e" stroke-width="2.2" fill="none" opacity=".35" stroke-linecap="round"/>
+            <path d="M104 98 C120 82 150 76 172 86" stroke="#a9805e" stroke-width="1.6" fill="none" opacity=".25" stroke-linecap="round"/>
           </g>
         </svg>
       </div></div>
@@ -242,7 +283,15 @@ label{display:block;font-size:14px;color:var(--mut);margin:14px 0 6px}
     <button class="sec" id="cTest" style="margin-top:12px">Probar conexión</button>
     <div class="note" id="cTestOut"></div>
 
-    <label>Voz</label>
+    <label>Tipo de voz</label>
+    <select class="f" id="cNat">
+      <option value="1">Natural de Google (suena más real)</option>
+      <option value="0">Voz del iPhone</option>
+    </select>
+    <div class="note">La voz natural gasta consultas gratuitas y tarda un poco más. Si se agotan, LAIA sigue con la voz del iPhone.</div>
+    <label>Voz natural</label>
+    <select class="f" id="cGv"><option>Aoede</option><option>Kore</option><option>Leda</option><option>Zephyr</option></select>
+    <label>Voz del iPhone (reserva)</label>
     <select class="f" id="cVoice"></select>
     <div class="note">Para una voz más natural, descarga una voz española «mejorada» o «premium» en Ajustes del iPhone › Accesibilidad › Contenido leído › Voces, y elígela aquí.</div>
     <label>Velocidad de la voz: <span id="cRateV"></span></label>
@@ -277,7 +326,7 @@ label{display:block;font-size:14px;color:var(--mut);margin:14px 0 6px}
 /* ================= Datos ================= */
 const KEY = "laia.v1";
 const DEF = {
-  cfg:{name:"Rubén",prov:"gemini",key:"",model:"gemini-3.1-flash-lite",base:"https://api.groq.com/openai/v1",voice:"",rate:1,wake:"laia",quiet:4,avatar:""},
+  cfg:{name:"Rubén",prov:"gemini",key:"",model:"gemini-3.1-flash-lite",base:"https://api.groq.com/openai/v1",voice:"",natural:true,gvoice:"Aoede",rate:1,wake:"laia",quiet:4,avatar:""},
   contacts:[], notes:[], lists:{}, rems:[], mem:[], hist:[]
 };
 let S = load();
@@ -345,20 +394,16 @@ function pickVoice(){
   voiceObj = vs.find(v=>v.voiceURI===S.cfg.voice) || vs[0] || null;
 }
 if(synth){ synth.onvoiceschanged=()=>{ pickVoice(); fillVoices(); }; }
-let speakTok=0;
-function speak(text){
+let speakTok=0, ttsModel=null, ttsOff=false, curSrc=null;
+function sysSpeak(text,tok){
   return new Promise(res=>{
-    text=(text||"").replace(/[*_#`>]/g,"").trim();
-    if(!text || !synth){ res(); return; }
-    const tok=++speakTok;
-    speaking=true; stopRec(); setState("speak","");
+    if(!synth){ res(); return; }
     try{ synth.cancel(); }catch(e){}
     const parts = text.match(/[^.!?…]+[.!?…]*/g) || [text];
     let i=0, done=false, wd;
-    const fin=()=>{ if(done) return; done=true; clearTimeout(wd); if(tok===speakTok) speaking=false; res(); };
+    const fin=()=>{ if(done) return; done=true; clearTimeout(wd); res(); };
     const next=()=>{
-      if(tok!==speakTok){ fin(); return; }
-      if(i>=parts.length){ fin(); return; }
+      if(tok!==speakTok || i>=parts.length){ fin(); return; }
       const t=parts[i++].trim(); if(!t){ next(); return; }
       const u=new SpeechSynthesisUtterance(t);
       u.lang = voiceObj ? voiceObj.lang : "es-ES";
@@ -371,7 +416,56 @@ function speak(text){
     next();
   });
 }
-function shutUp(){ speakTok++; speaking=false; try{ synth && synth.cancel(); }catch(e){} }
+async function findTtsModel(){
+  if(ttsModel) return ttsModel;
+  const d=await httpJson("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200",{headers:{"x-goog-api-key":S.cfg.key}});
+  const c=(d.models||[]).map(m=>m.name.replace("models/","")).filter(n=>/^gemini/.test(n)&&/tts/.test(n));
+  const rank=n=>(/flash/.test(n)?50:0)+(/lite/.test(n)?5:0)+(parseFloat((n.match(/gemini-(\d+(\.\d+)?)/)||[])[1])||0);
+  c.sort((x,y)=>rank(y)-rank(x));
+  if(!c.length) throw new Error("notts");
+  ttsModel=c[0]; return ttsModel;
+}
+async function cloudAudio(text){
+  const m=await findTtsModel();
+  const body={contents:[{parts:[{text:"Di esto en español de España, con voz cálida, cercana y natural, como una amiga que conversa: "+text}]}],
+    generationConfig:{responseModalities:["AUDIO"],speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:S.cfg.gvoice||"Aoede"}}}}};
+  const d=await httpJson("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(m)+":generateContent",
+    {method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":S.cfg.key},body:JSON.stringify(body)});
+  const part=((d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts)||[]).find(x=>x.inlineData&&x.inlineData.data);
+  if(!part) throw new Error("noaudio");
+  const rate=parseInt(((part.inlineData.mimeType||"").match(/rate=(\d+)/)||[])[1])||24000;
+  const bin=atob(part.inlineData.data), n=bin.length>>1;
+  audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==="suspended") await audioCtx.resume();
+  const buf=audioCtx.createBuffer(1,n,rate), ch=buf.getChannelData(0);
+  for(let i=0;i<n;i++){ let v=bin.charCodeAt(2*i)|(bin.charCodeAt(2*i+1)<<8); if(v>32767) v-=65536; ch[i]=v/32768; }
+  return buf;
+}
+function playBuf(buf,tok){
+  return new Promise(res=>{
+    if(tok!==speakTok){ res(); return; }
+    const src=audioCtx.createBufferSource(); src.buffer=buf; src.playbackRate.value=Math.min(1.15,Math.max(.9,Number(S.cfg.rate)||1));
+    src.connect(audioCtx.destination); curSrc=src; src.onended=()=>{ if(curSrc===src) curSrc=null; res(); }; src.start();
+  });
+}
+async function speak(text){
+  text=(text||"").replace(/[*_#`>]/g,"").trim();
+  if(!text) return;
+  const tok=++speakTok;
+  speaking=true; stopRec();
+  let done=false;
+  if(S.cfg.natural && S.cfg.prov==="gemini" && S.cfg.key && !ttsOff){
+    try{
+      setState("think","Preparando la voz…");
+      const buf=await cloudAudio(text.slice(0,1800));
+      if(tok===speakTok){ setState("speak",""); await playBuf(buf,tok); }
+      done=true;
+    }catch(e){ if(e.status===429||e.status===403||e.message==="notts") ttsOff=true; }
+  }
+  if(!done && tok===speakTok){ setState("speak",""); await sysSpeak(text,tok); }
+  if(tok===speakTok) speaking=false;
+}
+function shutUp(){ speakTok++; speaking=false; try{ synth && synth.cancel(); }catch(e){} try{ curSrc && curSrc.stop(); }catch(e){} curSrc=null; }
 
 /* ================= Escucha ================= */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -721,6 +815,7 @@ function openCfg(){
   $("cName").value=c.name; $("cProv").value=c.prov; $("cKey").value=c.key; $("cModel").value=c.model; $("cBase").value=c.base;
   $("cRate").value=c.rate; $("cRateV").textContent=Number(c.rate).toFixed(2); $("cWake").value=c.wake; $("cQuiet").value=c.quiet;
   $("cBaseWrap").style.display=c.prov==="openai"?"block":"none";
+  $("cNat").value=c.natural?"1":"0"; $("cGv").value=c.gvoice||"Aoede";
   fillVoices();
   const cc=$("cContacts"); cc.innerHTML=""; S.contacts.forEach(x=>cc.appendChild(contactRow(x)));
   $("cMem").innerHTML = S.mem.length ? S.mem.map((m,i)=>`<div class="row"><span class="t">${esc(m)}</span><button class="x" data-m="${i}">✕</button></div>`).join("") : `<div class="note">Todavía nada.</div>`;
@@ -730,7 +825,7 @@ function openCfg(){
 function readCfg(){
   const c=S.cfg;
   c.name=$("cName").value.trim(); c.prov=$("cProv").value; c.key=$("cKey").value.trim(); c.model=$("cModel").value.trim()||DEF.cfg.model;
-  c.base=$("cBase").value.trim()||DEF.cfg.base; c.voice=$("cVoice").value; c.rate=Number($("cRate").value)||1;
+  c.base=$("cBase").value.trim()||DEF.cfg.base; c.voice=$("cVoice").value; c.natural=$("cNat").value==="1"; c.gvoice=$("cGv").value; ttsOff=false; c.rate=Number($("cRate").value)||1;
   c.wake=norm($("cWake").value)||"laia"; c.quiet=Math.max(0,Number($("cQuiet").value)||0);
   S.contacts=[...$("cContacts").children].map(r=>{ const i=r.querySelectorAll("input"); return {name:i[0].value.trim(),alias:i[1].value.trim(),tel:i[2].value.trim()}; }).filter(x=>x.name);
   pickVoice(); save();
@@ -740,7 +835,7 @@ $("cRate").addEventListener("input",()=>{ $("cRateV").textContent=Number($("cRat
 $("cAddC").addEventListener("click",()=>$("cContacts").appendChild(contactRow()));
 $("cMem").addEventListener("click",e=>{ const b=e.target.closest("[data-m]"); if(!b) return; S.mem.splice(+b.dataset.m,1); save(); b.parentElement.remove(); });
 $("cWipe").addEventListener("click",()=>{ S.hist=[]; S.log=[]; save(); render(); toast("Conversación borrada"); });
-$("cVoiceTest").addEventListener("click",()=>{ S.cfg.voice=$("cVoice").value; S.cfg.rate=Number($("cRate").value)||1; pickVoice(); speak("Hola, soy Laia. Así sueno con esta voz."); });
+$("cVoiceTest").addEventListener("click",async ()=>{ readCfg(); beep(990,60); await speak("Hola, soy Laia. Así sueno con esta voz."); if(S.cfg.natural&&ttsOff) toast("La voz natural no está disponible ahora; uso la del iPhone"); });
 $("cTest").addEventListener("click",async ()=>{
   readCfg(); const o=$("cTestOut"); o.textContent="Probando…";
   try{ const r=parseOut(await llm("Responde solo con JSON {\"say\":\"...\",\"actions\":[]}.",[{r:"user",t:"Di: conexión correcta."}])); $("cModel").value=S.cfg.model; o.textContent="Funciona ("+S.cfg.model+"): "+(r.say||"ok"); }
