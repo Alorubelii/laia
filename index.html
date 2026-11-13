@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1016">
 <title>LAIA</title>
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta name="apple-mobile-web-app-title" content="LAIA">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="manifest" href="manifest.webmanifest">
 <style>
 :root{
   --bg:#0b1016; --panel:#141c26; --panel2:#1b2633; --line:#263445;
@@ -323,6 +328,33 @@ label{display:block;font-size:14px;color:var(--mut);margin:14px 0 6px}
 
 <script>
 "use strict";
+/* ================= Actualización automática ================= */
+const BUILD="20261113185945";
+let updPending=false;
+async function checkUpdate(){
+  if(location.protocol==="file:") return;
+  try{
+    const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"});
+    if(!r.ok) return;
+    const v=(await r.json()).build;
+    if(v && v!==BUILD){ updPending=true; applyUpdate(); }
+  }catch(e){}
+}
+let updToldOnce=false;
+function applyUpdate(){
+  if(!updPending) return;
+  // Si LAIA ya está en marcha (por ejemplo, conduciendo), no se corta: se avisa y se aplica al volver a abrirla.
+  if(typeof started!=="undefined" && started){
+    if(!updToldOnce){ updToldOnce=true; try{ toast("Hay una versión nueva de LAIA. Se cargará la próxima vez que la abras."); }catch(e){} }
+    return;
+  }
+  if(document.getElementById("cfg").classList.contains("show")){ setTimeout(applyUpdate,8000); return; }
+  try{ sessionStorage.setItem("laia.updated","1"); }catch(e){}
+  location.replace(location.pathname+"?v="+Date.now());
+}
+setInterval(checkUpdate,3*60*1000);
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") checkUpdate(); });
+setTimeout(checkUpdate,1500);
 /* ================= Datos ================= */
 const KEY = "laia.v1";
 const DEF = {
@@ -862,6 +894,7 @@ $("btnStart").addEventListener("click",async ()=>{
   if(!synth) w.push("Este navegador no puede hablar.");
   if(location.protocol!=="https:" && location.hostname!=="localhost") w.push("Necesita abrirse por https para usar el micrófono.");
   $("startWarn").textContent=w.join(" ");
+  try{ if(sessionStorage.getItem("laia.updated")){ sessionStorage.removeItem("laia.updated"); toast("LAIA se ha actualizado"); } }catch(e){}
 })();
 </script>
 </body>
