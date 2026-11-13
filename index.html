@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1016">
+<title>LAIA</title>
+<style>
+:root{
+  --bg:#0b1016; --panel:#141c26; --panel2:#1b2633; --line:#263445;
+  --txt:#eef3f8; --mut:#93a4b8; --acc:#5ad1c0; --acc2:#7aa7ff; --warn:#ffb454; --ok:#25d366; --bad:#ff6b6b;
+  --r:22px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;overscroll-behavior:none}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+.app{height:100dvh;display:flex;flex-direction:column;
+  padding:max(10px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))}
+header{display:flex;align-items:center;gap:10px;padding:4px 2px 8px}
+header h1{font-size:20px;letter-spacing:.22em;margin:0;font-weight:700}
+.chip{font-size:13px;color:var(--mut);background:var(--panel);border:1px solid var(--line);padding:5px 11px;border-radius:99px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:55vw}
+.chip.on{color:var(--acc);border-color:#2c5d58}
+.sp{flex:1}
+.ico{width:46px;height:46px;border-radius:50%;background:var(--panel);border:1px solid var(--line);display:grid;place-items:center;font-size:20px}
+main{flex:1;min-height:0;display:grid;grid-template-columns:1fr;grid-template-rows:auto 1fr;gap:12px}
+.stage{display:flex;flex-direction:column;align-items:center;gap:10px;min-height:0}
+.avatar{position:relative;width:clamp(150px,34dvh,300px);aspect-ratio:1;border-radius:50%;flex:none}
+.avatar .ring{position:absolute;inset:-7px;border-radius:50%;border:3px solid var(--line);transition:border-color .3s, box-shadow .3s}
+.avatar svg,.avatar img{width:100%;height:100%;border-radius:50%;display:block;object-fit:cover;background:#17212d}
+.st-listen .ring{border-color:#31475e}
+.st-armed .ring{border-color:var(--acc);box-shadow:0 0 0 6px rgba(90,209,192,.16),0 0 40px rgba(90,209,192,.35);animation:pulse 1.3s ease-in-out infinite}
+.st-think .ring{border-color:var(--warn);border-style:dashed;animation:spin 3s linear infinite}
+.st-speak .ring{border-color:var(--acc2);box-shadow:0 0 44px rgba(122,167,255,.45);animation:pulse .9s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.035)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.lid{transform-origin:center;transform-box:fill-box;animation:blink 5.2s infinite}
+@keyframes blink{0%,46%,50%,100%{transform:scaleY(0)}48%{transform:scaleY(1)}}
+.mouth-talk{display:none;transform-origin:center;transform-box:fill-box}
+.st-speak .mouth-talk{display:block;animation:talk .34s ease-in-out infinite alternate}
+.st-speak .mouth-rest{display:none}
+@keyframes talk{from{transform:scaleY(.25)}to{transform:scaleY(1)}}
+.breath{animation:breath 4.5s ease-in-out infinite;transform-origin:50% 100%;transform-box:fill-box}
+@keyframes breath{50%{transform:scaleY(1.012)}}
+.status{font-size:17px;color:var(--mut);min-height:22px;text-align:center}
+.heard{font-size:16px;color:var(--acc);min-height:20px;text-align:center;max-width:36em;padding:0 6px}
+.reply{font-size:clamp(18px,2.6dvh,24px);line-height:1.35;text-align:center;max-width:34em;padding:0 6px;overflow:auto;flex:1;min-height:40px}
+.ctrl{display:flex;gap:12px;align-items:center;justify-content:center;width:100%;flex:none}
+.big{height:74px;min-width:74px;border-radius:40px;font-size:18px;font-weight:650;padding:0 22px;background:var(--panel2);border:1px solid var(--line)}
+.big.mic{background:linear-gradient(180deg,#63dccb,#3fb8a7);color:#06211d;border:0;font-size:30px;width:92px;height:92px;border-radius:50%;padding:0}
+.big.on{background:#20406b;border-color:#3b68a8;color:#cfe1ff}
+.typed{display:flex;gap:8px;width:100%;max-width:640px;flex:none}
+.typed input{flex:1;height:46px;border-radius:14px;border:1px solid var(--line);background:var(--panel);padding:0 14px;font-size:16px;min-width:0}
+.typed button{height:46px;padding:0 16px;border-radius:14px;background:var(--panel2);border:1px solid var(--line)}
+.panels{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.tabs{display:flex;border-bottom:1px solid var(--line)}
+.tabs button{flex:1;padding:13px 4px;font-size:14px;color:var(--mut);border-bottom:3px solid transparent}
+.tabs button.sel{color:var(--txt);border-bottom-color:var(--acc)}
+.pane{flex:1;overflow:auto;padding:10px 14px;-webkit-overflow-scrolling:touch}
+.pane h3{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:12px 0 6px}
+.row{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line);font-size:16px;line-height:1.3}
+.row .n{color:var(--mut);min-width:1.6em}
+.row .t{flex:1;word-break:break-word}
+.row .x{color:var(--mut);font-size:20px;padding:0 6px}
+.row small{color:var(--mut);display:block}
+.empty{color:var(--mut);padding:18px 0;font-size:15px}
+.me{color:var(--acc)} .her{color:var(--txt)}
+/* acción grande */
+.sheet{position:fixed;inset:0;background:rgba(5,9,13,.93);display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;z-index:20;
+  padding:max(20px,env(safe-area-inset-top)) 20px max(20px,env(safe-area-inset-bottom))}
+.sheet.show{display:flex}
+.sheet .who{font-size:clamp(24px,4dvh,38px);font-weight:700;text-align:center}
+.sheet .msg{font-size:clamp(20px,3.2dvh,30px);line-height:1.3;text-align:center;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;max-width:26em;max-height:34dvh;overflow:auto}
+.sheet a.go{display:grid;place-items:center;text-decoration:none;width:min(92vw,620px);height:clamp(110px,24dvh,200px);border-radius:34px;background:var(--ok);color:#04230f;font-size:clamp(30px,6dvh,54px);font-weight:800;letter-spacing:.04em}
+.sheet a.go.call{background:var(--acc2);color:#06162f}
+.sheet a.go.nav{background:var(--warn);color:#2b1900}
+.sheet .hint{color:var(--mut);font-size:15px;text-align:center;max-width:30em}
+.sheet .cancel{height:68px;width:min(92vw,620px);border-radius:26px;background:var(--panel2);border:1px solid var(--line);font-size:22px}
+/* inicio y ajustes */
+.modal{position:fixed;inset:0;background:var(--bg);z-index:30;display:none;flex-direction:column;
+  padding:max(14px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+.modal.show{display:flex}
+.modal .body{flex:1;overflow:auto;max-width:720px;width:100%;margin:0 auto}
+.modal h2{margin:6px 0 12px;font-size:24px}
+label{display:block;font-size:14px;color:var(--mut);margin:14px 0 6px}
+.f{width:100%;height:50px;border-radius:14px;border:1px solid var(--line);background:var(--panel);padding:0 14px;font-size:16px}
+.note{font-size:14px;color:var(--mut);line-height:1.4;margin-top:6px}
+.cta{height:66px;border-radius:22px;background:linear-gradient(180deg,#63dccb,#3fb8a7);color:#06211d;font-size:21px;font-weight:750;width:100%;max-width:720px;margin:10px auto 0;display:block}
+.sec{height:52px;border-radius:16px;background:var(--panel2);border:1px solid var(--line);padding:0 16px;font-size:16px}
+.crow{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:6px;margin-bottom:6px}
+.crow input{height:44px;border-radius:12px;border:1px solid var(--line);background:var(--panel);padding:0 10px;font-size:15px;min-width:0}
+.hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center}
+.hero p{color:var(--mut);max-width:28em;line-height:1.45;font-size:17px;margin:0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom));background:#22303f;border:1px solid var(--line);padding:12px 18px;border-radius:16px;font-size:16px;z-index:40;display:none;max-width:90vw;text-align:center}
+.toast.show{display:block}
+/* iPhone Duo abierto y pantallas anchas: dos columnas */
+@media (min-width:680px){
+  main{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);grid-template-rows:1fr}
+  .avatar{width:clamp(180px,40dvh,340px)}
+  .chip{max-width:40vw}
+}
+@media (max-width:679px){
+  .panels{max-height:30dvh}
+}
+@media (max-height:620px) and (max-width:679px){
+  .panels{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <header>
+    <h1>LAIA</h1>
+    <span class="chip" id="chip">Apagada</span>
+    <span class="sp"></span>
+    <button class="ico" id="btnCfg" aria-label="Ajustes">⚙︎</button>
+  </header>
+
+  <main>
+    <section class="stage" id="stage">
+      <div class="avatar" id="avatar">
+        <div class="ring"></div>
+        <img id="avImg" alt="" hidden>
+        <svg id="avSvg" viewBox="0 0 300 300" role="img" aria-label="Avatar de LAIA">
+          <defs>
+            <linearGradient id="gbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22364a"/><stop offset="1" stop-color="#121b26"/></linearGradient>
+            <linearGradient id="gskin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2c9a8"/><stop offset="1" stop-color="#e2ae8b"/></linearGradient>
+            <linearGradient id="ghair" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5a3a2a"/><stop offset="1" stop-color="#2e1c14"/></linearGradient>
+            <linearGradient id="gtop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fb8a7"/><stop offset="1" stop-color="#2a8f82"/></linearGradient>
+          </defs>
+          <rect width="300" height="300" fill="url(#gbg)"/>
+          <g class="breath">
+            <path d="M62 300c2-58 24-104 88-104s86 46 88 104z" fill="url(#ghair)"/>
+            <path d="M40 300c6-46 40-66 78-72l32 20 32-20c38 6 72 26 78 72z" fill="url(#gtop)"/>
+            <path d="M128 206h44v34c0 10-10 18-22 18s-22-8-22-18z" fill="#d9a583"/>
+            <path d="M150 62c-52 0-78 34-76 86 1 30 6 62 16 82 6-24 8-52 10-74 26-6 52-22 66-44 10 22 28 38 44 44 2 24 4 50 12 74 10-22 14-52 14-82 0-52-32-86-86-86z" fill="url(#ghair)"/>
+            <ellipse cx="150" cy="150" rx="56" ry="68" fill="url(#gskin)"/>
+            <path d="M94 142c2-44 26-70 58-70 34 0 54 26 56 68-18-8-36-26-46-48-14 24-40 44-68 50z" fill="url(#ghair)"/>
+            <path d="M112 132q14-9 28-2" stroke="#4a2f22" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <path d="M160 130q14-7 28 2" stroke="#4a2f22" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <g>
+              <ellipse cx="126" cy="148" rx="10" ry="7" fill="#fff"/><circle cx="126" cy="148" r="5.6" fill="#4b6b52"/><circle cx="126" cy="148" r="2.6" fill="#1a1a1a"/><circle cx="128" cy="146" r="1.3" fill="#fff"/>
+              <ellipse cx="174" cy="148" rx="10" ry="7" fill="#fff"/><circle cx="174" cy="148" r="5.6" fill="#4b6b52"/><circle cx="174" cy="148" r="2.6" fill="#1a1a1a"/><circle cx="176" cy="146" r="1.3" fill="#fff"/>
+              <ellipse class="lid" cx="126" cy="148" rx="11" ry="8" fill="#e9bb9a"/>
+              <ellipse class="lid" cx="174" cy="148" rx="11" ry="8" fill="#e9bb9a"/>
+            </g>
+            <path d="M150 152q-5 16-1 22q4 2 8-1" stroke="#c98f6d" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <ellipse cx="112" cy="172" rx="11" ry="7" fill="#f09c8c" opacity=".28"/>
+            <ellipse cx="188" cy="172" rx="11" ry="7" fill="#f09c8c" opacity=".28"/>
+            <path class="mouth-rest" d="M131 190q19 13 38 0" stroke="#b5544f" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <ellipse class="mouth-talk" cx="150" cy="192" rx="15" ry="9" fill="#7a2f33" stroke="#b5544f" stroke-width="3"/>
+          </g>
+        </svg>
+      </div>
+      <div class="status" id="status">Pulsa «Empezar»</div>
+      <div class="heard" id="heard"></div>
+      <div class="reply" id="reply"></div>
+      <div class="ctrl">
+        <button class="big" id="btnTrip">Modo viaje</button>
+        <button class="big mic" id="btnMic" aria-label="Hablar">🎙</button>
+        <button class="big" id="btnStop">Callar</button>
+      </div>
+      <form class="typed" id="typed">
+        <input id="txt" placeholder="O escríbele aquí…" autocomplete="off" enterkeyhint="send">
+        <button type="submit">Enviar</button>
+      </form>
+    </section>
+
+    <aside class="panels">
+      <div class="tabs" id="tabs">
+        <button data-p="chat" class="sel">Charla</button>
+        <button data-p="notas">Notas</button>
+        <button data-p="listas">Listas</button>
+        <button data-p="rec">Avisos</button>
+      </div>
+      <div class="pane" id="pane"></div>
+    </aside>
+  </main>
+</div>
+
+<!-- Botón grande de acción -->
+<div class="sheet" id="sheet">
+  <div class="who" id="shWho"></div>
+  <div class="msg" id="shMsg"></div>
+  <a class="go" id="shGo" target="_blank" rel="noopener">ENVIAR</a>
+  <div class="hint" id="shHint"></div>
+  <button class="cancel" id="shCancel">Cancelar</button>
+</div>
+
+<!-- Inicio -->
+<div class="modal show" id="start">
+  <div class="hero">
+    <h1 style="letter-spacing:.3em;font-size:44px;margin:0">LAIA</h1>
+    <p>Tu asistente de voz. Di <b>«Laia»</b> y háblale normal. Mantén esta pantalla abierta y encendida.</p>
+    <p id="startWarn" style="color:var(--warn)"></p>
+  </div>
+  <button class="cta" id="btnStart">Empezar</button>
+  <button class="sec" id="btnStartCfg" style="margin:10px auto 0;display:block;width:100%;max-width:720px">Ajustes</button>
+</div>
+
+<!-- Ajustes -->
+<div class="modal" id="cfg">
+  <div class="body">
+    <h2>Ajustes</h2>
+
+    <label>Tu nombre</label>
+    <input class="f" id="cName">
+
+    <label>Motor de IA</label>
+    <select class="f" id="cProv">
+      <option value="gemini">Google Gemini (clave gratuita)</option>
+      <option value="openai">Otro compatible con OpenAI (Groq, etc.)</option>
+    </select>
+    <label>Clave de la API</label>
+    <input class="f" id="cKey" type="password" autocomplete="off" placeholder="Pega aquí tu clave">
+    <div class="note">La clave se guarda solo en este dispositivo y solo se envía al proveedor de IA.</div>
+    <label>Modelo</label>
+    <input class="f" id="cModel">
+    <div id="cBaseWrap"><label>Dirección del servicio (solo «otro»)</label><input class="f" id="cBase"></div>
+    <button class="sec" id="cTest" style="margin-top:12px">Probar conexión</button>
+    <div class="note" id="cTestOut"></div>
+
+    <label>Voz</label>
+    <select class="f" id="cVoice"></select>
+    <div class="note">Para una voz más natural, descarga una voz española «mejorada» o «premium» en Ajustes del iPhone › Accesibilidad › Contenido leído › Voces, y elígela aquí.</div>
+    <label>Velocidad de la voz: <span id="cRateV"></span></label>
+    <input id="cRate" type="range" min="0.8" max="1.25" step="0.05" style="width:100%">
+    <button class="sec" id="cVoiceTest" style="margin-top:8px">Escuchar voz</button>
+
+    <label>Palabra para activarla</label>
+    <input class="f" id="cWake">
+    <label>En modo viaje, si llevas callado estos minutos, te saca conversación (0 = nunca)</label>
+    <input class="f" id="cQuiet" type="number" min="0" max="60" inputmode="numeric">
+
+    <label>Avatar</label>
+    <input type="file" id="cAv" accept="image/*" class="f" style="padding-top:12px">
+    <button class="sec" id="cAvDel" style="margin-top:8px">Volver al avatar dibujado</button>
+
+    <label>Contactos (nombre · apodos separados por comas · teléfono)</label>
+    <div id="cContacts"></div>
+    <button class="sec" id="cAddC">Añadir contacto</button>
+    <div class="note">El teléfono se queda en este dispositivo; a la IA solo se le envían los nombres y apodos.</div>
+
+    <label>Lo que LAIA recuerda de ti</label>
+    <div id="cMem"></div>
+    <button class="sec" id="cWipe" style="margin-top:14px;color:var(--bad)">Borrar conversación guardada</button>
+  </div>
+  <button class="cta" id="cSave">Guardar</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ================= Datos ================= */
+const KEY = "laia.v1";
+const DEF = {
+  cfg:{name:"Rubén",prov:"gemini",key:"",model:"gemini-3.1-flash-lite",base:"https://api.groq.com/openai/v1",voice:"",rate:1,wake:"laia",quiet:4,avatar:""},
+  contacts:[], notes:[], lists:{}, rems:[], mem:[], hist:[]
+};
+let S = load();
+function load(){
+  try{
+    const d = JSON.parse(localStorage.getItem(KEY)||"null");
+    if(!d) return structuredClone(DEF);
+    return {...structuredClone(DEF),...d,cfg:{...DEF.cfg,...(d.cfg||{})}};
+  }catch(e){ return structuredClone(DEF); }
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+const $ = id => document.getElementById(id);
+const norm = s => (s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9ñ ]+/g," ").replace(/\s+/g," ").trim();
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ================= Estado ================= */
+let started=false, busy=false, speaking=false, trip=false;
+let armedUntil=0, lastActivity=Date.now(), pane="chat";
+let voiceObj=null, audioCtx=null, wakeLock=null;
+
+function setState(st, text){
+  const a=$("stage"); a.className="stage st-"+st;
+  if(text!==undefined) $("status").textContent=text;
+  const chip=$("chip");
+  chip.className="chip"+(started?" on":"");
+  chip.textContent = !started ? "Apagada" : (trip ? "Modo viaje: te escucho siempre" : "Di «"+cap(S.cfg.wake)+"»");
+}
+const cap = s => s.charAt(0).toUpperCase()+s.slice(1);
+function idleState(){
+  if(!started){ setState("off","Pulsa «Empezar»"); return; }
+  const armed = trip || Date.now()<armedUntil;
+  if(!SR){ setState("listen","Este navegador no escucha: usa el teclado"); return; }
+  setState(armed?"armed":"listen", armed?"Te escucho…":"Di «"+cap(S.cfg.wake)+"»");
+}
+let toastT;
+function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),3500); }
+
+/* ================= Sonido y pantalla ================= */
+function beep(f=880,ms=110){
+  try{
+    audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==="suspended") audioCtx.resume();
+    const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.frequency.value=f; g.gain.value=.08; o.connect(g); g.connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime+ms/1000);
+  }catch(e){}
+}
+async function keepAwake(){
+  try{ if("wakeLock" in navigator && document.visibilityState==="visible") wakeLock = await navigator.wakeLock.request("screen"); }catch(e){}
+}
+document.addEventListener("visibilitychange",()=>{
+  if(document.visibilityState==="visible" && started){ keepAwake(); if(!busy&&!speaking) restartRec(200); }
+});
+
+/* ================= Voz de salida ================= */
+const synth = window.speechSynthesis;
+function voices(){
+  const all = synth ? synth.getVoices() : [];
+  const es = all.filter(v=>/^es/i.test(v.lang));
+  const score = v => (/es[-_]ES/i.test(v.lang)?10:0) + (/premium|enhanced|mejorad|natural|neural/i.test(v.name)?6:0) + (/m[oó]nica|marisol|paulina|elvira|helena|laura|luc[ií]a/i.test(v.name)?3:0);
+  return es.sort((a,b)=>score(b)-score(a));
+}
+function pickVoice(){
+  const vs=voices();
+  voiceObj = vs.find(v=>v.voiceURI===S.cfg.voice) || vs[0] || null;
+}
+if(synth){ synth.onvoiceschanged=()=>{ pickVoice(); fillVoices(); }; }
+let speakTok=0;
+function speak(text){
+  return new Promise(res=>{
+    text=(text||"").replace(/[*_#`>]/g,"").trim();
+    if(!text || !synth){ res(); return; }
+    const tok=++speakTok;
+    speaking=true; stopRec(); setState("speak","");
+    try{ synth.cancel(); }catch(e){}
+    const parts = text.match(/[^.!?…]+[.!?…]*/g) || [text];
+    let i=0, done=false, wd;
+    const fin=()=>{ if(done) return; done=true; clearTimeout(wd); if(tok===speakTok) speaking=false; res(); };
+    const next=()=>{
+      if(tok!==speakTok){ fin(); return; }
+      if(i>=parts.length){ fin(); return; }
+      const t=parts[i++].trim(); if(!t){ next(); return; }
+      const u=new SpeechSynthesisUtterance(t);
+      u.lang = voiceObj ? voiceObj.lang : "es-ES";
+      if(voiceObj) u.voice=voiceObj;
+      u.rate=Number(S.cfg.rate)||1; u.pitch=1;
+      u.onend=next; u.onerror=next;
+      clearTimeout(wd); wd=setTimeout(()=>{ try{synth.cancel();}catch(e){} fin(); }, 5000+t.length*130);
+      synth.speak(u);
+    };
+    next();
+  });
+}
+function shutUp(){ speakTok++; speaking=false; try{ synth && synth.cancel(); }catch(e){} }
+
+/* ================= Escucha ================= */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec=null, recOn=false, sess="", debT=null, recFail=0;
+function wakeVariants(){
+  const w=norm(S.cfg.wake||"laia");
+  return w==="laia" ? ["laia","laya","leia","leya","la ia","laila","lahia","laja","layla"] : [w];
+}
+function findWake(t){
+  const words=(t||"").trim().split(/\s+/), nw=words.map(norm), vs=wakeVariants();
+  for(let i=words.length-1;i>=0;i--){
+    for(const v of vs){
+      const k=v.split(" ").length;
+      if(nw.slice(i,i+k).join(" ")===v) return words.slice(i+k).join(" ").replace(/^[,.;:!¡¿? ]+/,"").trim();   // lo que dijo después de la palabra
+    }
+  }
+  return null;
+}
+function startRec(){
+  if(!SR||!started||recOn||speaking||busy||document.visibilityState!=="visible") return;
+  try{
+    rec=new SR(); rec.lang="es-ES"; rec.continuous=true; rec.interimResults=true; rec.maxAlternatives=1;
+    rec.onstart=()=>{ recOn=true; recFail=0; idleState(); };
+    rec.onresult=e=>{
+      let t=""; for(let i=0;i<e.results.length;i++) t+=e.results[i][0].transcript+" ";
+      t=t.trim(); if(!t||t===sess) return;
+      sess=t;
+      const armed = trip || Date.now()<armedUntil;
+      const w=findWake(t);
+      if(armed || w!==null){ $("heard").textContent = (w!==null && !armed) ? (w||"…") : t; if(w!==null&&!armed) setState("armed","Te escucho…"); }
+      clearTimeout(debT); debT=setTimeout(endUtter, 1500);
+    };
+    rec.onerror=e=>{
+      if(e.error==="not-allowed"||e.error==="service-not-allowed"){ recFail=99; setState("off","Micrófono bloqueado: permite el micrófono y el dictado"); }
+      else recFail++;
+    };
+    rec.onend=()=>{ recOn=false; if(sess){ endUtter(); return; } if(recFail<8) restartRec(recFail?900:300); };
+    rec.start();
+  }catch(e){ recOn=false; }
+}
+function stopRec(){ clearTimeout(debT); sess=""; try{ rec && rec.abort(); }catch(e){} recOn=false; }
+let rsT; function restartRec(ms=350){ clearTimeout(rsT); rsT=setTimeout(startRec,ms); }
+function endUtter(){
+  clearTimeout(debT);
+  const t=sess; sess=""; if(!t) return;
+  try{ rec && rec.abort(); }catch(e){} recOn=false;
+  const armed = trip || Date.now()<armedUntil;
+  const w=findWake(t);
+  let cmd=null;
+  if(w!==null){ if(w){ cmd=w; } else { armedUntil=Date.now()+9000; beep(); $("heard").textContent=""; idleState(); restartRec(250); return; } }
+  else if(armed){ cmd=t; }
+  if(!cmd){ $("heard").textContent=""; restartRec(250); return; }
+  handle(cmd);
+}
+
+/* ================= Cerebro ================= */
+function sysPrompt(){
+  const now=new Date();
+  const fecha = now.toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long",year:"numeric"})+", "+now.toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"});
+  const iso = new Date(now.getTime()-now.getTimezoneOffset()*60000).toISOString().slice(0,16);
+  const n=S.cfg.name||"el usuario";
+  const cont = S.contacts.length ? S.contacts.map(c=>"- "+c.name+(c.alias?" (apodos: "+c.alias+")":"")).join("\n") : "(ninguno guardado)";
+  const notas = S.notes.length ? S.notes.map((x,i)=>(i+1)+". "+x.t).join("\n") : "(sin notas)";
+  const listas = Object.keys(S.lists).length ? Object.entries(S.lists).map(([k,v])=>k+": "+(v.length?v.join(", "):"vacía")).join("\n") : "(sin listas)";
+  const rems = S.rems.length ? S.rems.map((r,i)=>(i+1)+". "+r.t+" — "+new Date(r.at).toLocaleString("es-ES",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})).join("\n") : "(sin avisos)";
+  const mem = S.mem.length ? S.mem.map(m=>"- "+m).join("\n") : "(nada todavía)";
+  return `Eres LAIA, la asistente personal de voz de ${n}. Hablas español de España con un tono cálido, cercano y natural, como una persona de confianza que le acompaña, muchas veces mientras conduce.
+
+ESTILO AL HABLAR
+- Todo lo que dices se escucha, no se lee: frases cortas, normalmente de una a tres. Sin listas, sin markdown, sin emojis ni símbolos. Las horas y números, como se dicen al hablar.
+- Habla como una persona: natural, con humor cuando encaja, sin sonar a máquina ni repetir muletillas.
+
+CARÁCTER
+- Escuchas de verdad, al estilo de una buena psicóloga: recoges lo que te cuenta, preguntas con curiosidad (una sola pregunta cada vez) y das consejos prácticos y tu opinión sincera cuando te la pide o cuando ayuda.
+- No le das la razón por sistema: si ves algo de otra manera o crees que se equivoca, se lo dices con tacto y claridad.
+- Haces el viaje ameno: sacas temas, curiosidades, juegos de palabras o preguntas sobre su día, y te acuerdas de lo que te cuenta.
+- No eres psicóloga titulada ni médica y no diagnosticas. Ante un malestar fuerte o algo serio de salud, acompáñale y anímale a hablarlo con alguien de confianza o con un profesional. Si hay peligro inmediato, recuérdale el 112, y el 024 ante ideas de suicidio.
+- Seguridad al volante: nunca le pidas mirar ni tocar la pantalla, salvo el botón grande que tú misma preparas. Si la conversación le altera mientras conduce, sugiérele parar.
+- No inventes datos. Si necesitas información actual, usa la acción buscar; si no la tienes, dilo.
+
+FORMATO DE RESPUESTA
+Responde SIEMPRE con un único objeto JSON y nada más:
+{"say":"lo que dices en voz alta","actions":[ ... ]}
+"actions" puede ir vacío. Acciones disponibles (campo "t"):
+- {"t":"whatsapp","contacto":"nombre","texto":"mensaje tal como debe enviarse"}  Prepara un WhatsApp; aparece un botón grande de ENVIAR que pulsa él. Redacta el texto en primera persona como lo escribiría ${n}, corrigiendo lo dictado. En "say" léele el mensaje y dile que tiene el botón.
+- {"t":"llamar","contacto":"nombre"}  Botón grande de LLAMAR.
+- {"t":"navegar","destino":"lugar o dirección"}  Botón grande para abrir la ruta en Mapas.
+- {"t":"nota","texto":"..."}  /  {"t":"borrar_nota","n":1}
+- {"t":"lista_add","lista":"compra","items":["leche","pan"]}  /  {"t":"lista_quitar","lista":"compra","items":["pan"]}  /  {"t":"lista_vaciar","lista":"compra"}
+- {"t":"recordatorio","texto":"...","cuando":"AAAA-MM-DDTHH:MM"}  Hora local. Calcula la fecha a partir de la hora actual.  /  {"t":"borrar_recordatorio","n":1}
+- {"t":"recordar","dato":"..."}  Guarda un dato duradero sobre él (gustos, familia, trabajo) cuando lo cuente, para futuras charlas.
+- {"t":"contacto","nombre":"...","apodos":"apodo1, apodo2","telefono":"..."}  Guarda o actualiza un contacto.
+- {"t":"viaje","on":true}  Activa o desactiva el modo viaje (escucha continua sin decir tu nombre). Desactívalo si dice que quiere silencio o se despide.
+- {"t":"buscar","consulta":"..."}  Busca en internet algo actual; en "say" di solo que lo miras.
+- {"t":"cerrar"}  Quita el botón grande si dice cancelar.
+Para whatsapp y llamar usa el nombre EXACTO de la lista de contactos; si hay duda entre dos, pregunta cuál antes de preparar nada. Si no está en la lista, prepáralo igualmente con el nombre que dijo y avisa de que tendrá que elegir el chat él.
+Para leer notas, listas o avisos, léelos tú en "say" con los datos de abajo, de forma breve.
+
+DATOS ACTUALES
+Fecha y hora: ${fecha} (${iso})
+Modo viaje: ${trip?"activado":"desactivado"}
+Contactos:
+${cont}
+Notas:
+${notas}
+Listas:
+${listas}
+Avisos pendientes:
+${rems}
+Lo que sabes de ${n}:
+${mem}`;
+}
+async function httpJson(url, opts){
+  const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(),30000);
+  try{
+    const r=await fetch(url,{...opts,signal:ctl.signal});
+    let d=null; try{ d=await r.json(); }catch(e){}
+    if(!r.ok){ const er=new Error((d&&d.error&&(d.error.message||d.error))||("HTTP "+r.status)); er.status=r.status; throw er; }
+    return d;
+  }finally{ clearTimeout(to); }
+}
+async function pickGeminiModel(){
+  const d=await httpJson("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200",{headers:{"x-goog-api-key":S.cfg.key}});
+  const ok=(d.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes("generateContent")).map(m=>m.name.replace("models/",""))
+    .filter(n=>/^gemini/.test(n)&&!/image|tts|audio|live|embedding|vision|robotics|computer/.test(n));
+  const rank=n=>(/flash-lite/.test(n)?100:/flash/.test(n)?60:10)+(/preview|exp/.test(n)?0:8)+(parseFloat((n.match(/gemini-(\d+(\.\d+)?)/)||[])[1])||0);
+  ok.sort((a,b)=>rank(b)-rank(a));
+  if(!ok.length) throw new Error("No hay modelos disponibles para esta clave");
+  S.cfg.model=ok[0]; save(); return ok[0];
+}
+async function llm(sys, turns, {json=true, search=false}={}, retry=true){
+  if(!S.cfg.key){ const e=new Error("nokey"); e.code="nokey"; throw e; }
+  if(S.cfg.prov==="gemini"){
+    const body={system_instruction:{parts:[{text:sys}]},
+      contents:turns.map(m=>({role:m.r==="user"?"user":"model",parts:[{text:m.t}]})),
+      generationConfig:{temperature:0.85,maxOutputTokens:2000}};
+    if(json && !search) body.generationConfig.responseMimeType="application/json";
+    if(search) body.tools=[{google_search:{}}];
+    try{
+      const d=await httpJson("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(S.cfg.model)+":generateContent",
+        {method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":S.cfg.key},body:JSON.stringify(body)});
+      const c=d.candidates&&d.candidates[0];
+      return ((c&&c.content&&c.content.parts)||[]).map(p=>p.text||"").join("").trim();
+    }catch(e){
+      if(retry && (e.status===404||e.status===400&&/model/i.test(e.message))){ await pickGeminiModel(); return llm(sys,turns,{json,search},false); }
+      throw e;
+    }
+  }else{
+    const body={model:S.cfg.model,temperature:0.85,max_tokens:1200,
+      messages:[{role:"system",content:sys},...turns.map(m=>({role:m.r==="user"?"user":"assistant",content:m.t}))]};
+    if(json) body.response_format={type:"json_object"};
+    const d=await httpJson(S.cfg.base.replace(/\/+$/,"")+"/chat/completions",
+      {method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.cfg.key},body:JSON.stringify(body)});
+    return (d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content||"").trim();
+  }
+}
+function parseOut(raw){
+  if(!raw) return {say:"",actions:[]};
+  let s=raw.replace(/^```(?:json)?/i,"").replace(/```$/,"").trim();
+  try{ const o=JSON.parse(s); if(o&&typeof o==="object") return {say:String(o.say||""),actions:Array.isArray(o.actions)?o.actions:[]}; }catch(e){}
+  const a=s.indexOf("{"), b=s.lastIndexOf("}");
+  if(a>=0&&b>a){ try{ const o=JSON.parse(s.slice(a,b+1)); return {say:String(o.say||""),actions:Array.isArray(o.actions)?o.actions:[]}; }catch(e){} }
+  return {say:s,actions:[]};
+}
+function errText(e){
+  if(e.code==="nokey") return "Me falta la clave del motor de inteligencia. Ponla en ajustes y vuelvo a estar contigo.";
+  if(e.status===429) return "He llegado al límite gratuito de consultas por ahora. Prueba dentro de un rato.";
+  if(e.status===400||e.status===401||e.status===403) return "La clave del motor no me funciona. Revísala en ajustes.";
+  if(e.name==="AbortError"||/Failed to fetch|NetworkError|Load failed/i.test(e.message||"")) return "No tengo conexión ahora mismo.";
+  return "Me ha fallado algo al pensar. Repítemelo, por favor.";
+}
+
+/* ================= Conversación ================= */
+function pushHist(r,t){ S.hist.push({r,t}); if(S.hist.length>24) S.hist=S.hist.slice(-24); save(); }
+function chatLine(who,t){ S.log=S.log||[]; S.log.push({who,t}); if(S.log.length>60) S.log=S.log.slice(-60); if(pane==="chat") render(); }
+async function handle(cmd, hidden=false){
+  if(busy) return;
+  busy=true; lastActivity=Date.now(); stopRec();
+  if(!hidden){ $("heard").textContent=cmd; chatLine("me",cmd); }
+  setState("think","Pensando…");
+  let out;
+  try{
+    const turns=S.hist.concat([{r:"user",t:cmd}]);
+    const raw=await llm(sysPrompt(),turns);
+    out=parseOut(raw);
+    pushHist("user",cmd); pushHist("model",JSON.stringify({say:out.say,actions:out.actions}));
+  }catch(e){ out={say:errText(e),actions:[]}; }
+  let extra="";
+  try{ extra = await runActions(out.actions||[]) || ""; }catch(e){}
+  const say=[out.say,extra].filter(Boolean).join(" ");
+  $("reply").textContent=say; if(say) chatLine("her",say);
+  await speak(say);
+  busy=false; lastActivity=Date.now();
+  armedUntil=Date.now()+10000;          // puede contestar sin repetir el nombre
+  $("heard").textContent="";
+  idleState(); restartRec(300);
+}
+function findContact(name){
+  const n=norm(name); if(!n) return null;
+  const hit = c => norm(c.name)===n || (c.alias||"").split(",").map(norm).filter(Boolean).includes(n);
+  return S.contacts.find(hit) || S.contacts.find(c=>norm(c.name).split(" ").includes(n)) || null;
+}
+function phoneDigits(p){ let d=(p||"").replace(/\D/g,""); if(d.startsWith("00")) d=d.slice(2); if(d.length===9) d="34"+d; return d; }
+async function runActions(acts){
+  let extra="";
+  for(const a of acts){
+    if(!a||!a.t) continue;
+    switch(a.t){
+      case "whatsapp":{
+        const c=findContact(a.contacto); const num=c?phoneDigits(c.tel):"";
+        showSheet({who:"WhatsApp a "+(c?c.name:(a.contacto||"…")), msg:a.texto||"", label:"ENVIAR", cls:"",
+          href:"https://wa.me/"+num+"?text="+encodeURIComponent(a.texto||""),
+          hint: num ? "Se abre WhatsApp con el chat y el mensaje escrito. Pulsa la flecha de enviar." : "No tengo su teléfono guardado: se abrirá WhatsApp para que elijas el chat."});
+        break; }
+      case "llamar":{
+        const c=findContact(a.contacto);
+        if(c&&c.tel) showSheet({who:"Llamar a "+c.name,msg:"",label:"LLAMAR",cls:"call",href:"tel:+"+phoneDigits(c.tel),hint:""});
+        else extra+="No tengo el teléfono de "+(a.contacto||"ese contacto")+" guardado. ";
+        break; }
+      case "navegar":
+        showSheet({who:"Ir a",msg:a.destino||"",label:"IR",cls:"nav",href:"https://maps.apple.com/?daddr="+encodeURIComponent(a.destino||"")+"&dirflg=d",hint:"Se abre Mapas con la ruta."});
+        break;
+      case "nota": if(a.texto){ S.notes.push({t:String(a.texto),at:Date.now()}); } break;
+      case "borrar_nota":{ const i=(a.n|0)-1; if(S.notes[i]) S.notes.splice(i,1); break; }
+      case "lista_add":{ const k=norm(a.lista||"lista")||"lista"; S.lists[k]=S.lists[k]||[]; for(const it of [].concat(a.items||[])) if(it&&!S.lists[k].some(x=>norm(x)===norm(it))) S.lists[k].push(String(it)); break; }
+      case "lista_quitar":{ const k=norm(a.lista||""); if(S.lists[k]){ const q=[].concat(a.items||[]).map(norm); S.lists[k]=S.lists[k].filter(x=>!q.includes(norm(x))); } break; }
+      case "lista_vaciar":{ const k=norm(a.lista||""); if(S.lists[k]) delete S.lists[k]; break; }
+      case "recordatorio":{ const at=new Date(a.cuando).getTime(); if(a.texto&&!isNaN(at)) { S.rems.push({t:String(a.texto),at}); S.rems.sort((x,y)=>x.at-y.at); } else extra+="No he entendido bien la hora del aviso. "; break; }
+      case "borrar_recordatorio":{ const i=(a.n|0)-1; if(S.rems[i]) S.rems.splice(i,1); break; }
+      case "recordar": if(a.dato&&!S.mem.includes(a.dato)){ S.mem.push(String(a.dato)); if(S.mem.length>60) S.mem.shift(); } break;
+      case "contacto":{ if(a.nombre){ let c=S.contacts.find(x=>norm(x.name)===norm(a.nombre)); if(!c){ c={name:String(a.nombre),alias:"",tel:""}; S.contacts.push(c);} if(a.apodos) c.alias=String(a.apodos); if(a.telefono) c.tel=String(a.telefono); } break; }
+      case "viaje": setTrip(!!a.on); break;
+      case "cerrar": hideSheet(); break;
+      case "buscar":{
+        try{
+          if(S.cfg.prov!=="gemini") throw new Error("nosearch");
+          const txt=await llm("Eres LAIA. Responde en español de España, para ser escuchado: dos o tres frases claras, sin listas, sin enlaces, sin símbolos. Hoy es "+new Date().toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long",year:"numeric"})+".",
+            [{r:"user",t:String(a.consulta||"")}],{json:false,search:true});
+          if(txt){ extra+=txt+" "; pushHist("user","[resultado de la búsqueda] "+txt); pushHist("model",JSON.stringify({say:"Vale.",actions:[]})); }
+        }catch(e){ extra+="Ahora mismo no puedo buscar en internet. "; }
+        break; }
+    }
+  }
+  save(); render(); return extra.trim();
+}
+
+/* ================= Botón grande ================= */
+function showSheet(o){
+  $("shWho").textContent=o.who; $("shMsg").textContent=o.msg; $("shMsg").style.display=o.msg?"block":"none";
+  const g=$("shGo"); g.textContent=o.label; g.className="go "+(o.cls||""); g.href=o.href;
+  $("shHint").textContent=o.hint||""; $("sheet").classList.add("show");
+}
+function hideSheet(){ $("sheet").classList.remove("show"); }
+$("shGo").addEventListener("click",()=>{ setTimeout(hideSheet,600); });
+$("shCancel").addEventListener("click",hideSheet);
+
+/* ================= Avisos y charla espontánea ================= */
+setInterval(async ()=>{
+  if(!started||busy||speaking) return;
+  const now=Date.now();
+  const due=S.rems.filter(r=>r.at<=now);
+  if(due.length){
+    S.rems=S.rems.filter(r=>r.at>now); save(); render();
+    busy=true; stopRec(); beep(660,160);
+    const say="Aviso: "+due.map(r=>r.t).join(". Y otro: ")+".";
+    $("reply").textContent=say; chatLine("her",say);
+    await speak(say); busy=false; armedUntil=Date.now()+10000; idleState(); restartRec(300);
+    return;
+  }
+  const q=Number(S.cfg.quiet)||0;
+  if(trip && q>0 && !$("sheet").classList.contains("show") && !sess && now-lastActivity>q*60000){
+    lastActivity=now;
+    handle("[Lleva un rato en silencio durante el viaje. Sácale conversación tú: una pregunta sobre él o un tema que le pueda apetecer, distinto de los anteriores. Breve.]", true);
+  }
+}, 15000);
+
+/* ================= Modo viaje y controles ================= */
+function setTrip(on){ trip=!!on; $("btnTrip").classList.toggle("on",trip); $("btnTrip").textContent=trip?"Viaje: activado":"Modo viaje"; lastActivity=Date.now(); idleState(); }
+$("btnTrip").addEventListener("click",()=>{ setTrip(!trip); beep(trip?990:520); if(!busy&&!speaking) restartRec(150); });
+$("btnMic").addEventListener("click",()=>{
+  if(!started) return;
+  if(speaking){ shutUp(); }
+  if(!SR){ $("txt").focus(); return; }
+  armedUntil=Date.now()+12000; beep(); idleState(); if(!busy) restartRec(150);
+});
+$("btnStop").addEventListener("click",()=>{ shutUp(); if(!busy){ idleState(); restartRec(250); } });
+$("typed").addEventListener("submit",e=>{ e.preventDefault(); const v=$("txt").value.trim(); if(!v) return; $("txt").value=""; $("txt").blur(); if(speaking) shutUp(); handle(v); });
+
+/* ================= Paneles ================= */
+$("tabs").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; pane=b.dataset.p; [...$("tabs").children].forEach(x=>x.classList.toggle("sel",x===b)); render(); });
+$("pane").addEventListener("click",e=>{
+  const x=e.target.closest("[data-del]"); if(!x) return;
+  const [k,i,j]=x.dataset.del.split("|");
+  if(k==="n") S.notes.splice(+i,1);
+  if(k==="r") S.rems.splice(+i,1);
+  if(k==="l"){ S.lists[i].splice(+j,1); if(!S.lists[i].length) delete S.lists[i]; }
+  save(); render();
+});
+function render(){
+  const p=$("pane"); let h="";
+  if(pane==="chat"){
+    const L=(S.log||[]).slice(-30);
+    h = L.length ? L.map(m=>`<div class="row"><span class="t ${m.who==="me"?"me":"her"}">${esc(m.t)}</span></div>`).join("") : `<div class="empty">Aquí verás lo que os vais diciendo.</div>`;
+  }else if(pane==="notas"){
+    h = S.notes.length ? S.notes.map((n,i)=>`<div class="row"><span class="n">${i+1}</span><span class="t">${esc(n.t)}</span><button class="x" data-del="n|${i}">✕</button></div>`).join("") : `<div class="empty">Sin notas. Di «${esc(cap(S.cfg.wake))}, apunta que…».</div>`;
+  }else if(pane==="listas"){
+    const ks=Object.keys(S.lists);
+    h = ks.length ? ks.map(k=>`<h3>${esc(k)}</h3>`+S.lists[k].map((it,j)=>`<div class="row"><span class="t">${esc(it)}</span><button class="x" data-del="l|${esc(k)}|${j}">✕</button></div>`).join("")).join("") : `<div class="empty">Sin listas. Di «añade pan a la lista de la compra».</div>`;
+  }else{
+    h = S.rems.length ? S.rems.map((r,i)=>`<div class="row"><span class="n">${i+1}</span><span class="t">${esc(r.t)}<small>${esc(new Date(r.at).toLocaleString("es-ES",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}))}</small></span><button class="x" data-del="r|${i}">✕</button></div>`).join("") : `<div class="empty">Sin avisos. Suenan mientras LAIA esté abierta.</div>`;
+  }
+  p.innerHTML=h; if(pane==="chat") p.scrollTop=p.scrollHeight;
+}
+
+/* ================= Avatar ================= */
+function applyAvatar(){
+  const img=$("avImg"), svg=$("avSvg");
+  if(S.cfg.avatar){ img.src=S.cfg.avatar; img.hidden=false; svg.style.display="none"; }
+  else{ img.hidden=true; img.removeAttribute("src"); svg.style.display="block"; }
+}
+$("cAv").addEventListener("change",e=>{
+  const f=e.target.files&&e.target.files[0]; if(!f) return;
+  const im=new Image(); const url=URL.createObjectURL(f);
+  im.onload=()=>{ const s=512, c=document.createElement("canvas"); c.width=c.height=s; const m=Math.min(im.width,im.height);
+    c.getContext("2d").drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,s,s);
+    S.cfg.avatar=c.toDataURL("image/jpeg",.85); URL.revokeObjectURL(url); applyAvatar(); toast("Avatar cambiado"); };
+  im.src=url;
+});
+$("cAvDel").addEventListener("click",()=>{ S.cfg.avatar=""; applyAvatar(); });
+
+/* ================= Ajustes ================= */
+function fillVoices(){
+  const sel=$("cVoice"); if(!sel) return; const vs=voices();
+  sel.innerHTML = vs.length ? vs.map(v=>`<option value="${esc(v.voiceURI)}">${esc(v.name)} (${esc(v.lang)})</option>`).join("") : `<option value="">Voz por defecto</option>`;
+  if(voiceObj) sel.value=voiceObj.voiceURI;
+}
+function contactRow(c={name:"",alias:"",tel:""}){
+  const d=document.createElement("div"); d.className="crow";
+  d.innerHTML=`<input placeholder="Nombre" value="${esc(c.name)}"><input placeholder="Apodos" value="${esc(c.alias||"")}"><input placeholder="Teléfono" inputmode="tel" value="${esc(c.tel||"")}"><button class="x" type="button" aria-label="Quitar">✕</button>`;
+  d.querySelector("button").onclick=()=>d.remove(); return d;
+}
+function openCfg(){
+  const c=S.cfg;
+  $("cName").value=c.name; $("cProv").value=c.prov; $("cKey").value=c.key; $("cModel").value=c.model; $("cBase").value=c.base;
+  $("cRate").value=c.rate; $("cRateV").textContent=Number(c.rate).toFixed(2); $("cWake").value=c.wake; $("cQuiet").value=c.quiet;
+  $("cBaseWrap").style.display=c.prov==="openai"?"block":"none";
+  fillVoices();
+  const cc=$("cContacts"); cc.innerHTML=""; S.contacts.forEach(x=>cc.appendChild(contactRow(x)));
+  $("cMem").innerHTML = S.mem.length ? S.mem.map((m,i)=>`<div class="row"><span class="t">${esc(m)}</span><button class="x" data-m="${i}">✕</button></div>`).join("") : `<div class="note">Todavía nada.</div>`;
+  $("cTestOut").textContent="";
+  shutUp(); stopRec(); $("cfg").classList.add("show");
+}
+function readCfg(){
+  const c=S.cfg;
+  c.name=$("cName").value.trim(); c.prov=$("cProv").value; c.key=$("cKey").value.trim(); c.model=$("cModel").value.trim()||DEF.cfg.model;
+  c.base=$("cBase").value.trim()||DEF.cfg.base; c.voice=$("cVoice").value; c.rate=Number($("cRate").value)||1;
+  c.wake=norm($("cWake").value)||"laia"; c.quiet=Math.max(0,Number($("cQuiet").value)||0);
+  S.contacts=[...$("cContacts").children].map(r=>{ const i=r.querySelectorAll("input"); return {name:i[0].value.trim(),alias:i[1].value.trim(),tel:i[2].value.trim()}; }).filter(x=>x.name);
+  pickVoice(); save();
+}
+$("cProv").addEventListener("change",()=>{ const o=$("cProv").value==="openai"; $("cBaseWrap").style.display=o?"block":"none"; $("cModel").value=o?"llama-3.3-70b-versatile":DEF.cfg.model; });
+$("cRate").addEventListener("input",()=>{ $("cRateV").textContent=Number($("cRate").value).toFixed(2); });
+$("cAddC").addEventListener("click",()=>$("cContacts").appendChild(contactRow()));
+$("cMem").addEventListener("click",e=>{ const b=e.target.closest("[data-m]"); if(!b) return; S.mem.splice(+b.dataset.m,1); save(); b.parentElement.remove(); });
+$("cWipe").addEventListener("click",()=>{ S.hist=[]; S.log=[]; save(); render(); toast("Conversación borrada"); });
+$("cVoiceTest").addEventListener("click",()=>{ S.cfg.voice=$("cVoice").value; S.cfg.rate=Number($("cRate").value)||1; pickVoice(); speak("Hola, soy Laia. Así sueno con esta voz."); });
+$("cTest").addEventListener("click",async ()=>{
+  readCfg(); const o=$("cTestOut"); o.textContent="Probando…";
+  try{ const r=parseOut(await llm("Responde solo con JSON {\"say\":\"...\",\"actions\":[]}.",[{r:"user",t:"Di: conexión correcta."}])); $("cModel").value=S.cfg.model; o.textContent="Funciona ("+S.cfg.model+"): "+(r.say||"ok"); }
+  catch(e){ o.textContent="Error: "+(e.code==="nokey"?"falta la clave":(e.message||e.status)); }
+});
+$("cSave").addEventListener("click",()=>{ readCfg(); $("cfg").classList.remove("show"); render(); idleState(); if(started&&!busy) restartRec(250); });
+$("btnCfg").addEventListener("click",openCfg);
+$("btnStartCfg").addEventListener("click",openCfg);
+
+/* ================= Arranque ================= */
+$("btnStart").addEventListener("click",async ()=>{
+  started=true; $("start").classList.remove("show");
+  beep(990,90); pickVoice(); keepAwake(); setTrip(false); render();
+  const hola = S.cfg.key ? "Hola"+(S.cfg.name?" "+S.cfg.name:"")+". Estoy contigo. Di mi nombre cuando me necesites."
+                         : "Hola. Para poder pensar necesito la clave del motor de inteligencia. Ponla en ajustes.";
+  $("reply").textContent=hola; chatLine("her",hola);
+  busy=true; await speak(hola); busy=false;
+  idleState(); restartRec(250);
+});
+(function init(){
+  applyAvatar(); render(); setState("off","Pulsa «Empezar»");
+  const w=[];
+  if(!SR) w.push("Este navegador no permite escuchar por voz. Ábrela en Safari.");
+  if(!synth) w.push("Este navegador no puede hablar.");
+  if(location.protocol!=="https:" && location.hostname!=="localhost") w.push("Necesita abrirse por https para usar el micrófono.");
+  $("startWarn").textContent=w.join(" ");
+})();
+</script>
+</body>
+</html>
